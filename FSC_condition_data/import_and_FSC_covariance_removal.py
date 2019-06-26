@@ -5,10 +5,10 @@ from scipy.optimize import curve_fit
 import re
 import scipy.stats as st
 import multiprocessing
-import pysftp
+#import pysftp
 import os
 #with pysftp.Connection('ruudstoof.com', username='uploader', password='myPass') as sftp:
-        print(sftp.listdir("upload/Huseyin_Tas_cello_in_putida_flow_cytometry_non_extended"))
+#        print(sftp.listdir("upload/Huseyin_Tas_cello_in_putida_flow_cytometry_non_extended"))
 #        with sftp.cd('/Huseyin_Tas_cello_in_putida_flow_cytometry_non_extended'):           # temporarily chdir to allcode
 #            #sftp.put('/pycode/filename')  	# upload file to allcode/pycode on remote
 #            sftp.get('remote_file')
