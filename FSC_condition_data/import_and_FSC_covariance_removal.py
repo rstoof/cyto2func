@@ -91,6 +91,12 @@ def fit2binormal(kdedat):
     return [fit_params,fit_Rsquared]
 
 
+def calc_stuff(it):
+    fit=fit2binormal(kdedata( processfile(it//12,it%12)))
+    return fit[0]
+    #fitgate.append(fit[0])
+
+
 pool = multiprocessing.Pool()
 out1 = pool.map(calc_stuff, range(0, 12*len(files_chopped)))
 fittedgates = [out1[i * n:(i + 1) * n] for i in range((len(out1) + n - 1) // n )]
