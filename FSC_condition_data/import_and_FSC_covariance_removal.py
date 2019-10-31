@@ -13,7 +13,7 @@ import os
 #            #sftp.put('/pycode/filename')  	# upload file to allcode/pycode on remote
 #            sftp.get('remote_file')
 
-mydir='/home/ruud/Documents/upload/Huseyin_Tas_cello_in_putida_flow_cytometry_non_extended/'
+mydir='../FlowRepository_FR-FCM-ZZQM_files'
 if os.path.isdir(mydir):
     usedir=mydir
 else:
@@ -41,11 +41,12 @@ def gaussian_2d(xy_mesh, amp, xc, yc, sigma_x, sigma_y,rho):
 
 
 files = os.listdir(usedir)
+files
 files_alph=sort_nicely(files)
-n=12 #Assumes 12 measurements each
+n=1 #Assumes 12 measurements each
 files_chopped = [files_alph[i * n:(i + 1) * n] for i in range((len(files_alph) + n - 1) // n )]
 
-
+files_chopped
 iptgs=[]
 names=[]
 for files_set in files_chopped:
@@ -54,8 +55,11 @@ for conds in files_chopped[0]:
     iptgs.append((conds).partition('_')[2].partition('.')[0])
 
 
-def processfile( gate , iptg ):
-    data=np.genfromtxt(direct+files_chopped[gate][iptg], delimiter=',',skip_header=1)[:,[-5,5]]
+def processfile( gate , iptg , fname = False):
+    if fname:
+        data=np.genfromtxt(usedir+"/"+fname, delimiter=',',skip_header=1)[:,[-5,5]]
+    else:
+        data=np.genfromtxt(usedir+files_chopped[gate][iptg], delimiter=',',skip_header=1)[:,[-5,5]]
     data=data[data[:,0]>0]#deletes all negative measurements
     data=data[data[:,1]>0]
     fluor=np.log(data[:,0])   #log transformes data
@@ -78,6 +82,7 @@ def kdedata(dat,usestandardrange=False): #makes a 2D histogram of log transforme
     values = np.vstack([fl, vl])
     kernel = st.gaussian_kde(values)
     f = np.reshape(kernel(positions).T, xx.shape)
+    axs2[id].imshow(np.rot90(f),aspect="equal", cmap=plt.cm.gist_earth_r,extent=[fluormin, fluormax, volmin, volmax])
     return [xx,yy,f]
 
 
@@ -85,7 +90,8 @@ def fit2binormal(kdedat):
     #fits a 2D -normal distribution to 2D histogram of log transformed data
     [xx,yy,f]=kdedat
     xy_mesh = [xx,yy]
-    guess_vals = [np.max(f), 2, 3, 1, 1, .6]
+    guess_vals = [np.max(f), 7, 7, 1, 1, 1]
+    #guess_vals = [np.max(f), 2, 3, 1, 1, .6]
     # perform the fit, making sure to flatten the noisy data for the fit routine
     fit_params, cov_mat = curve_fit(gaussian_2d, xy_mesh, np.ravel(f), p0=guess_vals, maxfev=100000,bounds=([0,-3,-3,0,0,0],[10,10,10,5,5,1]))
     # calculate fit parameter errors from covariance matrix
@@ -100,10 +106,53 @@ def calc_stuff(it):
     fit=fit2binormal(kdedata( processfile(it//12,it%12)))
     return fit[0]
     #fitgate.append(fit[0])
+files_chopped
+processfile(0,0,'LacI-CAGop_B3_P3.fcs')
+
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf8')
+path=usedir+"/"+'LacI-CAGop_B3_P3.fcs'
+usedir
+np.genfromtxt(file,encoding='utf8')
+import fcsparser
+files
+%matplotlib inline
+kdedata([fluor,vol]);
+fig, axs= plt.subplots(nrows=6, ncols=3, figsize=(6,8), dpi=150)
+fig2, axs2= plt.subplots(nrows=6, ncols=3, figsize=(6,8), dpi=150)
+axs=axs.ravel()
+axs2=axs2.ravel()
+fits=[]
+for id,path in enumerate(files):
+    path=usedir+"/"+path
+    meta, data = fcsparser.parse(path, meta_data_only=False, reformat_meta=True)
+    print(id)
+    try:
+        axs[id].plot(data['SSC-A'],data['FITC-A'],"b.")
+        print(id)
+        axs[id].set_xscale('log')
+        axs[id].set_yscale('log')
+        data=np.array([data['FSC-A'],data['FITC-A']]).transpose()
+        data=data[data[:,0]>0]#deletes all negative measurements
+        data=data[data[:,1]>100]
+        fluor=np.log(data[:,0])   #log transformes data
+        vol=np.log(data[:,1])
+        fits.append(fit2binormal(kdedata([fluor,vol])))
+    except:
+        print("fail at id: "+str(id))
 
 
-pool = multiprocessing.Pool()
-out1 = pool.map(calc_stuff, range(0, 12*len(files_chopped)))
+fig.savefig('test_fsc_controls.png', bbox_inches='tight')#, dpi=1500)
+fig2.savefig('test2_fsc_controls.png', bbox_inches='tight')#, dpi=1500)
+
+
+fits
+
+#pool = multiprocessing.Pool()
+#out1 = pool.map(calc_stuff, range(0, 12*len(files_chopped)))
+2+2
 fittedgates = [out1[i * n:(i + 1) * n] for i in range((len(out1) + n - 1) // n )]
 
 
