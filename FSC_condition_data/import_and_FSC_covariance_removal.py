@@ -7,22 +7,14 @@ import scipy.stats as st
 import multiprocessing
 #import pysftp
 import os
+
 #with pysftp.Connection('ruudstoof.com', username='uploader', password='myPass') as sftp:
 #        print(sftp.listdir("upload/Huseyin_Tas_cello_in_putida_flow_cytometry_non_extended"))
 #        with sftp.cd('/Huseyin_Tas_cello_in_putida_flow_cytometry_non_extended'):           # temporarily chdir to allcode
 #            #sftp.put('/pycode/filename')  	# upload file to allcode/pycode on remote
 #            sftp.get('remote_file')
 
-mydir='../FlowRepository_FR-FCM-ZZQM_files'
-if os.path.isdir(mydir):
-    usedir=mydir
-else:
-    from tkinter import filedialog
-    from tkinter import *
-    root = Tk()
-    root.withdraw()
-    yourdir = filedialog.askdirectory(title = "Select Measurement folder")
-    usedir=yourdir
+
 
 
 def sort_nicely( l ):#<3 wmil@stackexchange """ Sort the given list in the way that humans expect."""
@@ -38,21 +30,6 @@ def gaussian_2d(xy_mesh, amp, xc, yc, sigma_x, sigma_y,rho):
     gauss = amp*np.exp(-((x-xc)**2/(sigma_x**2)-(2*rho*(x-xc)*(y-yc))/(sigma_x*sigma_y)+(y-yc)**2/(sigma_y**2)))/(2*np.pi*sigma_x*sigma_y*np.sqrt(1-rho**2))
     # flatten the 2D Gaussian down to 1D
     return np.ravel(gauss)
-
-
-files = os.listdir(usedir)
-files
-files_alph=sort_nicely(files)
-n=1 #Assumes 12 measurements each
-files_chopped = [files_alph[i * n:(i + 1) * n] for i in range((len(files_alph) + n - 1) // n )]
-
-files_chopped
-iptgs=[]
-names=[]
-for files_set in files_chopped:
-    names.append((files_set[0]).partition('_')[0])
-for conds in files_chopped[0]:
-    iptgs.append((conds).partition('_')[2].partition('.')[0])
 
 
 def processfile( gate , iptg , fname = False):
@@ -105,23 +82,65 @@ def fit2binormal(kdedat):
 def calc_stuff(it):
     fit=fit2binormal(kdedata( processfile(it//12,it%12)))
     return fit[0]
-    #fitgate.append(fit[0])
-files_chopped
-processfile(0,0,'LacI-CAGop_B3_P3.fcs')
 
+
+#with pysftp.Connection('ruudstoof.com', username='uploader', password='myPass') as sftp:
+#        print(sftp.listdir("upload/Huseyin_Tas_cello_in_putida_flow_cytometry_non_extended"))
+#        with sftp.cd('/Huseyin_Tas_cello_in_putida_flow_cytometry_non_extended'):           # temporarily chdir to allcode
+#            #sftp.put('/pycode/filename')  	# upload file to allcode/pycode on remote
+#            sftp.get('remote_file')
+
+mydir='../FlowRepository_FR-FCM-ZZQM_files'
+if os.path.isdir(mydir):
+    usedir=mydir
+else:
+    from tkinter import filedialog
+    from tkinter import *
+    root = Tk()
+    root.withdraw()
+    yourdir = filedialog.askdirectory(title = "Select Measurement folder")
+    usedir=yourdir
+
+
+mydir='../FlowRepository_FR-FCM-ZZQM_files'
+os.chdir(usedir)
+dotdot=os.path.realpath(usedir+"/..")
+names=np.genfromtxt(dotdot+"/Michael_Jahn_2016.csv", delimiter=',',dtype="str")
+names
+
+
+names[0,1:]
 import sys
-
+file
 reload(sys)
 sys.setdefaultencoding('utf8')
-path=usedir+"/"+'LacI-CAGop_B3_P3.fcs'
+path=usedir+"/"+files[0]
 usedir
-np.genfromtxt(file,encoding='utf8')
+names[0,1]
+dotdot+"/FlowRepository_FR-FCM-ZZQM_files/"+
+meta, data = fcsparser.parse(dotdot+"/FlowRepository_FR-FCM-ZZQM_files/"+names[0,1], meta_data_only=False, reformat_meta=True)
+
+data["Pulse Width"];
+;
+;
+Chan1="SS Log"
+Chan2="FL 1 Log"
+
+
+meta, data = fcsparser.parse(dotdot+"/FlowRepository_FR-FCM-ZZQM_files/"+names[-1,1], meta_data_only=False, reformat_meta=True)
+
+plt.plot(data["FS Log"],data['FL 1 Log'],"b.")
+plt.plot(data["FS Log"],data['FL 1 Log'],"b.")
+#np.genfromtxt(file,encoding='utf8')
+
+
+
+
 import fcsparser
-files
 %matplotlib inline
-kdedata([fluor,vol]);
-fig, axs= plt.subplots(nrows=6, ncols=3, figsize=(6,8), dpi=150)
-fig2, axs2= plt.subplots(nrows=6, ncols=3, figsize=(6,8), dpi=150)
+
+fig, axs= plt.subplots(nrows=21, ncols=3, figsize=(6,20), dpi=150)
+fig2, axs2= plt.subplots(nrows=21, ncols=3, figsize=(6,20), dpi=150)
 axs=axs.ravel()
 axs2=axs2.ravel()
 fits=[]
@@ -130,12 +149,12 @@ for id,path in enumerate(files):
     meta, data = fcsparser.parse(path, meta_data_only=False, reformat_meta=True)
     print(id)
     try:
-        axs[id].plot(data['SSC-A'],data['FITC-A'],"b.")
+        axs[id].plot(data[Chan1],data[Chan2],"b.")
         print(id)
         axs[id].set_xscale('log')
         axs[id].set_yscale('log')
-        data=np.array([data['FSC-A'],data['FITC-A']]).transpose()
-        data=data[data[:,0]>0]#deletes all negative measurements
+        data=np.array([data[Chan1],data[Chan2]]).transpose()
+        data=data[data[:,0]>1600]#deletes all negative measurements
         data=data[data[:,1]>100]
         fluor=np.log(data[:,0])   #log transformes data
         vol=np.log(data[:,1])
@@ -147,9 +166,11 @@ for id,path in enumerate(files):
 fig.savefig('test_fsc_controls.png', bbox_inches='tight')#, dpi=1500)
 fig2.savefig('test2_fsc_controls.png', bbox_inches='tight')#, dpi=1500)
 
+fits[:1]
 
-fits
 
+
+np.savetxt("fits.csv",np.array(np.array(fits)[:,0]),delimiter=",")
 #pool = multiprocessing.Pool()
 #out1 = pool.map(calc_stuff, range(0, 12*len(files_chopped)))
 2+2
@@ -166,6 +187,7 @@ stdrdmeanV=np.array(fittedgates)[1,:,2].mean()
 stdrdstdflu=np.array(fittedgates)[1,:,3].mean()
 stdrdstdV=np.array(fittedgates)[1,:,4].mean()
 stdrdrho=np.array(fittedgates)[1,:,5].mean()
+
 for gate in range(2,len(names)):
     print("start "+names[gate])
     #f, (axs) = plt.subplots(2, 6, sharex=True, sharey=True)
