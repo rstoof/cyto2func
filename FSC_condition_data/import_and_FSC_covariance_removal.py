@@ -6,6 +6,7 @@ import re
 import scipy.stats as st
 import multiprocessing
 #import pysftp
+#trying with data from:https://doi.org/10.1186/s12934-016-0610-8
 import os
 
 #with pysftp.Connection('ruudstoof.com', username='uploader', password='myPass') as sftp:
