@@ -101,13 +101,27 @@ else:
     yourdir = filedialog.askdirectory(title = "Select Measurement folder")
     usedir=yourdir
 
-
-mydir='../FlowRepository_FR-FCM-ZZQM_files'
+ls
+# mydir='../FlowRepository_FR-FCM-ZZQM_files'
 os.chdir(usedir)
-dotdot=os.path.realpath(usedir+"/..")
-names=np.genfromtxt(dotdot+"/Michael_Jahn_2016.csv", delimiter=',',dtype="str")
+test=os.getcwd()
+test
+sys("pwd")
+import inspect
+src_file_path = inspect.getfile(lambda: None)
+src_file_path
+ls
+os.path.dirname(os.path.abspath("__file__"))
+dir_path = os.path.dirname(os.path.realpath(__file__))
+this_py_file = os.path.realpath(__file__)
+# os.path
+# dotdot=os.path.realpath(usedir+"/..")
+names=np.genfromtxt("Michael_Jahn_2016.csv", delimiter=',',dtype="str")
 names
 
+
+import fcsparser
+%matplotlib inline
 
 names[0,1:]
 import sys
@@ -117,27 +131,36 @@ sys.setdefaultencoding('utf8')
 path=usedir+"/"+files[0]
 usedir
 names[0,1]
-dotdot+"/FlowRepository_FR-FCM-ZZQM_files/"+
-meta, data = fcsparser.parse(dotdot+"/FlowRepository_FR-FCM-ZZQM_files/"+names[0,1], meta_data_only=False, reformat_meta=True)
+#dotdot+"/FlowRepository_FR-FCM-ZZQM_files/"+
+names[0,1:]
+plt.figure(figsize=(30,15))
+for id,name in enumerate(names[0,1:]):
+    meta, data = fcsparser.parse("FlowRepository_FR-FCM-ZZQM_files/"+name, meta_data_only=False, reformat_meta=True)
+    plt.scatter(data["FS Log"],data['FL 1 Log'],.01)
 
-data["Pulse Width"];
-;
-;
+
+names[-1,1:-2]
+plt.figure(figsize=(30,15))
+for id,name in enumerate(names[-1,1:-2]):
+    meta, data = fcsparser.parse("FlowRepository_FR-FCM-ZZQM_files/"+name, meta_data_only=False, reformat_meta=True)
+    plt.scatter(data["FS Log"],data['FL 1 Log'],.01)
+    #,['r.', 'g.', 'b.', 'y.','r.', 'g.', 'b.', 'y.','r.', 'g.', 'b.', 'y.'][id])
+
+
 Chan1="SS Log"
 Chan2="FL 1 Log"
 
 
-meta, data = fcsparser.parse(dotdot+"/FlowRepository_FR-FCM-ZZQM_files/"+names[-1,1], meta_data_only=False, reformat_meta=True)
+meta, data = fcsparser.parse("FlowRepository_FR-FCM-ZZQM_files/"+names[-1,1], meta_data_only=False, reformat_meta=True)
 
-plt.plot(data["FS Log"],data['FL 1 Log'],"b.")
+
 plt.plot(data["FS Log"],data['FL 1 Log'],"b.")
 #np.genfromtxt(file,encoding='utf8')
 
 
 
 
-import fcsparser
-%matplotlib inline
+
 
 fig, axs= plt.subplots(nrows=21, ncols=3, figsize=(6,20), dpi=150)
 fig2, axs2= plt.subplots(nrows=21, ncols=3, figsize=(6,20), dpi=150)
