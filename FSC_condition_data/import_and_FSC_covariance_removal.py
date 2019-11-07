@@ -51,10 +51,11 @@ def kdedata(dat,usestandardrange=False): #makes a 2D histogram of log transforme
         fluormin =np.log(.001)
         fluormax =np.log(100)
     else:
-        fluormin = np.percentile(fl,2)
-        fluormax = np.percentile(fl,98)
-    volmin = np.percentile(vl,2)
-    volmax = np.percentile(vl,98)
+        fluormin = np.percentile(fl,5)
+        fluormax = np.percentile(fl,95)
+    volmin = np.percentile(vl,5)
+    volmax = np.percentile(vl,95)
+    #dat=dat[dat[:,0]>fluormin&dat[:,0]<fluormax&dat[:,1]>volmin&dat[:,1]<volmax]
     xx, yy = np.mgrid[fluormin:fluormax:160j, volmin:volmax:160j]
     positions = np.vstack([xx.ravel(), yy.ravel()])
     values = np.vstack([fl, vl])
@@ -68,16 +69,16 @@ def fit2binormal(kdedat):
     #fits a 2D -normal distribution to 2D histogram of log transformed data
     [xx,yy,f]=kdedat
     xy_mesh = [xx,yy]
-    guess_vals = [np.max(f), 7, 7, 1, 1, 1]
+    guess_vals = [np.max(f), 3, 3, 2, 2, .8]
     #guess_vals = [np.max(f), 2, 3, 1, 1, .6]
     # perform the fit, making sure to flatten the noisy data for the fit routine
-    fit_params, cov_mat = curve_fit(gaussian_2d, xy_mesh, np.ravel(f), p0=guess_vals, maxfev=100000,bounds=([0,-3,-3,0,0,0],[10,10,10,5,5,1]))
+    fit_params, cov_mat = curve_fit(gaussian_2d, xy_mesh, np.ravel(f), p0=guess_vals, maxfev=10000000,bounds=([0,-3,-3,0,0,.0],[50,15,15,5,5,1]))
     # calculate fit parameter errors from covariance matrix
     fit_errors = np.sqrt(np.diag(cov_mat))
     # manually calculate R-squared goodness of fit
     fit_residual = f - gaussian_2d(xy_mesh, *fit_params).reshape(np.outer(xx[:,0],yy[0]).shape)
     fit_Rsquared = 1 - np.var(fit_residual)/np.var(f)
-    return [fit_params,fit_Rsquared]
+    return np.append(fit_params,fit_Rsquared)
 
 
 def calc_stuff(it):
@@ -102,7 +103,7 @@ else:
     yourdir = filedialog.askdirectory(title = "Select Measurement folder")
     usedir=yourdir
 
-ls
+
 # mydir='../FlowRepository_FR-FCM-ZZQM_files'
 os.chdir(usedir)
 test=os.getcwd()
@@ -117,6 +118,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 this_py_file = os.path.realpath(__file__)
 # os.path
 # dotdot=os.path.realpath(usedir+"/..")
+ls
+usedir
 names=np.genfromtxt("Michael_Jahn_2016.csv", delimiter=',',dtype="str")
 names
 
@@ -133,12 +136,26 @@ path=usedir+"/"+files[0]
 usedir
 names[0,1]
 #dotdot+"/FlowRepository_FR-FCM-ZZQM_files/"+
-names[0,1:]
+len(names[0,1:])
+plt.figure(figsize=(10,10))
+for id,name in enumerate(names[0,5:]):
+    meta, data = fcsparser.parse("FlowRepository_FR-FCM-ZZQM_files/"+name, meta_data_only=False, reformat_meta=True)
+    data=data[(data["SS Log"]>1500) & (data["FS Log"]>1500)]
+    ax=plt.subplot(9, 1, id+1)
+    ax.scatter(data["FS Log"],data['FL 1 Log'],.01)
+    ax.set(xlim=(1500, 3000), ylim=(0, 2000))
+    ax.set_title(name)
+plt.tight_layout()
+
+
 plt.figure(figsize=(30,15))
 for id,name in enumerate(names[0,1:]):
     meta, data = fcsparser.parse("FlowRepository_FR-FCM-ZZQM_files/"+name, meta_data_only=False, reformat_meta=True)
-    plt.scatter(data["FS Log"],data['FL 1 Log'],.01)
+    gatedata=data[(data["SS Log"]>1500) & (data["FS Log"]>1500)]
+    plt.scatter(gatedata["SS Log"],gatedata['FS Log'],.1,label=name+"_corr=_"+str(np.corrcoef(data["SS Log"],data["FS Log"])[0,1]))
+plt.legend( fontsize=20,markerscale=10)
 
+names[0,1:-2]
 
 names[-1,1:-2]
 plt.figure(figsize=(30,15))
@@ -148,8 +165,7 @@ for id,name in enumerate(names[-1,1:-2]):
     #,['r.', 'g.', 'b.', 'y.','r.', 'g.', 'b.', 'y.','r.', 'g.', 'b.', 'y.'][id])
 
 
-Chan1="SS Log"
-Chan2="FL 1 Log"
+
 
 
 meta, data = fcsparser.parse("FlowRepository_FR-FCM-ZZQM_files/"+names[-1,1], meta_data_only=False, reformat_meta=True)
@@ -163,45 +179,74 @@ plt.plot(data["FS Log"],data['FL 1 Log'],"b.")
 
 
 
-fig, axs= plt.subplots(nrows=21, ncols=3, figsize=(6,20), dpi=150)
-fig2, axs2= plt.subplots(nrows=21, ncols=3, figsize=(6,20), dpi=150)
+fig, axs= plt.subplots(ncols=len(names[0,1:]),nrows=len(names[:-1]), figsize=(6,20), dpi=150)
+fig2, axs2= plt.subplots(ncols=len(names[0,1:]),nrows=len(names[:-1]), figsize=(6,20), dpi=150)
 axs=axs.ravel()
 axs2=axs2.ravel()
+Chan1="FS Log"
+Chan2="FL 1 Log"
 fits=[]
-for id,path in enumerate(files):
-    path=usedir+"/"+path
-    meta, data = fcsparser.parse(path, meta_data_only=False, reformat_meta=True)
-    print(id)
-    try:
-        axs[id].plot(data[Chan1],data[Chan2],"b.")
+names[:-1,0]
+
+for id1,names2 in enumerate(names[:-1]):
+    fits2=[]
+    for id2,path in enumerate(names2[1:]):
+        id=id2+len(names[0,1:])*id1
+        print(path)
+        path="FlowRepository_FR-FCM-ZZQM_files/"+path
+        fig.savefig('test_fsc_controls.png', bbox_inches='tight')#, dpi=1500)
+        fig2.savefig('test2_fsc_controls.png', bbox_inches='tight')#, dpi=1500)
+        meta, data = fcsparser.parse(path, meta_data_only=False, reformat_meta=True)
         print(id)
-        axs[id].set_xscale('log')
-        axs[id].set_yscale('log')
-        data=np.array([data[Chan1],data[Chan2]]).transpose()
-        data=data[data[:,0]>1600]#deletes all negative measurements
-        data=data[data[:,1]>100]
-        fluor=np.log(data[:,0])   #log transformes data
-        vol=np.log(data[:,1])
-        fits.append(fit2binormal(kdedata([fluor,vol])))
-    except:
-        print("fail at id: "+str(id))
+        try:
+            datatest=data[(data["SS Log"]>1500) & (data["FS Log"]>1500) & (data[Chan1]>0)& (data[Chan2]>0) ]
+            datatest=np.log(datatest)
+            fluormin = np.percentile(datatest[Chan1],5)
+            fluormax = np.percentile(datatest[Chan1],95)
+            volmin = np.percentile(datatest[Chan2],5)
+            volmax = np.percentile(datatest[Chan2],95)
+            axs[id].hist2d(datatest[Chan1],datatest[Chan2],bins=100,range=[[fluormin, fluormax],[ volmin, volmax]])
 
-
+            #axs[id].set_xscale('log')
+            #axs[id].set_yscale('log')
+            data=np.array([data[Chan1],data[Chan2]]).transpose()
+            data=data[data[:,0]>0]#deletes all negative measurements
+            data=data[data[:,1]>0]
+            fluor=np.log(data[:,0])   #log transformes data
+            vol=np.log(data[:,1])
+            print("voor")
+            print(len(fits2))
+            fits2.append(fit2binormal(kdedata([fluor,vol])))
+            print(len(fits2))
+            #print(fits)
+        except k:
+            print("fail at id: "+str(id))
+    fits.append(fits2)
+    #print(np.matrix(fits))
 fig.savefig('test_fsc_controls.png', bbox_inches='tight')#, dpi=1500)
 fig2.savefig('test2_fsc_controls.png', bbox_inches='tight')#, dpi=1500)
 
-fits[:1]
 
 
+np.array(fits)[:,-2]
+np.set_printoptions(suppress=True,linewidth=100)
 
+names.shape
+
+print(np.array(fits,subok=True,ndmin=3)[:,0,-1])
+
+x = np.array([[1, 2, 3], [4, 5,6]], np.int32)
+len(fits)
+fits
 np.savetxt("fits.csv",np.array(np.array(fits)[:,0]),delimiter=",")
 #pool = multiprocessing.Pool()
 #out1 = pool.map(calc_stuff, range(0, 12*len(files_chopped)))
 2+2
 fittedgates = [out1[i * n:(i + 1) * n] for i in range((len(out1) + n - 1) // n )]
-
-
-
+fits
+len(fits)
+for mat in fits:
+    print(np.matrix(mat[-2:]))
 
 
 #now we assume that the standard is the second fittedgate
