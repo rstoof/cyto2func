@@ -358,14 +358,15 @@ df3.insert(10,"log_std_gfp",fitstdfl)
 df3.insert(11,"log_std_v",fitstdv)
 df3.insert(12,"log_rho",fitrho)
 df3.insert(13,"fit_goodness",fitgoodness)
-df3.to_csv("log_normal fitted.csv",index=False)
+df3.insert(14,"std_gfp_correct",np.sqrt(1-np.power(np.array(df3.log_rho),2))*np.array(df3.log_std_gfp))
+df3.to_csv("log_normal_fitted.csv",index=False)
 
 examplemeasurement=df3.query("strain=='KT 2440' and plasmid=='pSeva221::1818' ")
 
 measurement
 
 
-df3=pandas.read_csv('log_normal fitted.csv')
+df3=pandas.read_csv('log_normal_fitted.csv')
 
 
 df3
@@ -380,13 +381,10 @@ test=examplemeasurement.plot(x="iptg_concentration",y="log_mean_gfp",kind="scatt
 grouped=examplemeasurement.groupby('plasmid')
 plt.figure
 len(grouped)
-
 df3
-correctgfpvar=np.sqrt(1-np.power(np.array(examplemeasurement.log_rho),2))*np.array(examplemeasurement.log_std_gfp)
 
 df3.strain.value_counts()
 
-examplemeasurement.insert(14,"std_gfp_correct",correctgfpvar)
 
 fig, axs = plt.subplots(9,8, figsize=(30, 30), facecolor='w', edgecolor='k')
 axs = axs.ravel()
