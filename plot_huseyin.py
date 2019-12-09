@@ -24,4 +24,4 @@ for strain in strains:
         print(id,name)
         group.plot(ax=axs[id],x="iptg_concentration",y="log_mean_gfp",kind="scatter",logx=True,xlim=[5/1.5,2000*1.5],yerr="log_std_gfp",title=name,color='r');
         group.plot(ax=axs[id],x="iptg_concentration",y="log_mean_gfp",kind="scatter",logx=True,xlim=[5/1.5,2000*1.5],yerr="std_gfp_correct",title=name);
-    fig.savefig(name+".png")
+    fig.savefig(strain+".png")
