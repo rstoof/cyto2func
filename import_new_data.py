@@ -335,6 +335,7 @@ for index,row in df.iterrows():
         data2=kdedata([np.log(data["GFP_H"]),np.log(data["FSC_H"])])
         fits=fit2binormal(data2)
         fitarr.append(fits)
+        print(index)
         print(fits)
     except:
         print("fail at"+str(index))
@@ -367,9 +368,9 @@ df3.insert(14,"fit_goodness",fitgoodness)
 df3.insert(15,"std_gfp_correct",np.sqrt(1-np.power(np.array(df3.log_rho),2))*np.array(df3.log_std_gfp))
 df3
 
+aap
 
-
-df3.to_csv("log_normal_fitted.csv")#),index=False)
+df3.to_csv("log_normal_fitted2.csv")#),index=False)
 
 examplemeasurement=df3.query("strain=='KT 2440' and plasmid=='pSeva221::1818' ")
 

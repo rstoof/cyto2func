@@ -24,11 +24,12 @@ channels=["GFP_H"]
 
 median_fcs=[]
 droparr=[]
-for index,row in df.iterrows():
+for index,row in df.head().iterrows():
     try:
         meta, data = fcsparser.parse("/home/ruud/Desktop/server/home/data/Local_Limited_storage/FCS/"+row.filename, meta_data_only=False, reformat_meta=True)
         data.columns=[x.strip().replace('-', '_') for x in data.columns]
         medi=data["GFP_H"].median()
+        data["GFP_H"].hist()
         print(medi)
         median_fcs.append(medi)
     except:
