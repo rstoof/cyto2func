@@ -369,8 +369,9 @@ df3.insert(15,"std_gfp_correct",np.sqrt(1-np.power(np.array(df3.log_rho),2))*np.
 df3
 
 aap
-
-df3.to_csv("log_normal_fitted2.csv")#),index=False)
+cd
+os.chdir("/")
+df3.to_csv("/home/ruud/Desktop/server/home/data/Local_Limited_storage/cyto2func/log_normal_fitted2.csv")#),index=False)
 
 examplemeasurement=df3.query("strain=='KT 2440' and plasmid=='pSeva221::1818' ")
 
