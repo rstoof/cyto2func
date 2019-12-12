@@ -34,20 +34,122 @@ huseyin_median
 
 compare2=pandas.merge(compare,huseyin_median, on=["strain","plasmid","backbone","iptg"], how='outer',validate="1:1")
 
-compare3.query('plasmid=="1717"').groupby(['backbone','strain']).log_mean_gfp
+#compare3.query('plasmid=="1717"').groupby(['backbone','strain']).log_mean_gfp
 #compare2["newstandard"]=0
 
-groups = compare2.query("backbone!=['Empty','EmptyRow']").groupby(['backbone','strain'])
-compare3=pandas.merge(compare2,compare2.groupby(['backbone','strain']).rrpu.min().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_min"))
+#compare3=pandas.merge(compare2,compare2.groupby(['backbone','strain']).rrpu.min().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_min"))
+compare3=pandas.merge(compare2,compare2.query('plasmid=="1201"').groupby(['backbone','strain']).rrpu.mean().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_min"))
 compare4=pandas.merge(compare3,compare2.query('plasmid=="1717"').groupby(['backbone','strain']).rrpu.mean().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_standard"))
-compare4.rrpu_standard
-compare4["newstandard"]=(np.exp(compare4.rrpu)-np.exp(compare4.rrpu_min))/(np.exp(compare4.rrpu_standard)-np.exp(compare4.rrpu_min))
+compare4["newstandard"]=((np.exp(compare4.rrpu)-np.exp(compare4.rrpu_min))/(np.exp(compare4.rrpu_standard)-np.exp(compare4.rrpu_min)))
 compare5=compare4.copy()
 
 compare5.columns
 compare5.drop(columns=['filename',"filename2","date","lowfsc","lowgfp","real_time","log_mean_v_y","rrpu_min","rrpu_standard"])
 
-compare5.to_csv("standardised_rrpu.csv")
+compare5.to_csv("standardised_rrpu2.csv")
+compare5
+groups = compare5.query("backbone!=['Empty','EmptyRow']").groupby(['backbone','strain'])
+compare5[['rrpu','rrpu_min','rrpu_standard']]
+
+# compare5.newstandard
+# compare5.newstandard.hist(bins=30)
+fig, axs = plt.subplots(23,4,figsize=(15,4*23))
+axs=axs.ravel()
+for name, group in groups:
+    #fig, [ax1,ax2,ax3,ax4] = plt.subplots(1,4,figsize=(30,8))
+
+    plasms=group.groupby('plasmid')
+    for id,[plas,plasm] in enumerate(plasms):
+        axs[4*id+1-1].plot(plasm.iptg, np.exp(plasm.log_mean_v_x), marker='o', linestyle='-', ms=6, label=name)
+        axs[4*id+2-1].plot(plasm.iptg, plasm.rrpu, marker='o', linestyle='-', ms=6, label=name)
+        axs[4*id+3-1].plot(plasm.iptg, plasm.newstandard, marker='o', linestyle='-', ms=6, label=name)
+        axs[4*id+4-1].plot(plasm.iptg, plasm.median_yfp, marker='o', linestyle='-', ms=6, label=name)
+        axs[4*id+1-1].set_xscale('log')
+        axs[4*id+2-1].set_xscale('log')
+        axs[4*id+3-1].set_xscale('log')
+        axs[4*id+4-1].set_xscale('log')
+        #axs[4*id+1-1].set_yscale('log')
+        # axs[4*id+2-1].set_yscale('log')
+        # axs[4*id+3-1].set_yscale('log')
+        # axs[4*id+4-1].set_yscale('log')
+        axs[4*id+1-1].set_xlabel('iptg')
+        axs[4*id+2-1].set_xlabel('iptg')
+        axs[4*id+3-1].set_xlabel('iptg')
+        axs[4*id+4-1].set_ylabel('FSC')
+        axs[4*id+2-1].set_ylabel('not volume conditioned rpu')
+        axs[4*id+3-1].set_ylabel('volume conditioned rpu')
+        axs[4*id+1-1].legend()
+        axs[4*id+2-1].legend()
+        axs[4*id+3-1].legend()
+        axs[4*id+4-1].legend()
+        axs[4*id+1-1].set_ylim([0.,50])
+        axs[4*id+1-1].set_title("FSC_for:"+plas)
+        axs[4*id+2-1].set_title("my_RPU_for:"+plas)
+        axs[4*id+3-1].set_title("my_RRPU_for:"+plas)
+        axs[4*id+4-1].set_title("huseyin_RPU_for:"+plas)
+        #axs[id+1].set_ylim([0.01,50])
+        #axs[id+3].set_ylim([0.01,50])
+        #axs[id+4].set_ylim([0.01,50])
+    fig.suptitle(name)
+    name2 = re.sub('[^0-9a-zA-Z]+', '_', str(name))
+    #plt.savefig(name2+".png")
+plt.tight_layout()
+plt.savefig("all_plasmids"+".png", dpi=300)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 compare2["rrpu"]=(compare["log_mean_gfp"]*compare["log_std_v"]-compare["log_std_gfp"]*compare["log_mean_v_x"]*compare["log_rho"]+compare["log_std_gfp"]*compare["log_mean_v_y"]*compare["log_rho"])/compare["log_std_v"]
