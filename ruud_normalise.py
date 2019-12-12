@@ -44,7 +44,7 @@ compare4["newstandard"]=((np.exp(compare4.rrpu)-np.exp(compare4.rrpu_min))/(np.e
 compare5=compare4.copy()
 
 compare5.columns
-compare5.drop(columns=['filename',"filename2","date","lowfsc","lowgfp","real_time","log_mean_v_y","rrpu_min","rrpu_standard"])
+compare5=compare5.drop(columns=['filename',"filename2","date","lowfsc","lowgfp","real_time","log_mean_v_y","rrpu_min","rrpu_standard"])
 
 compare5.to_csv("standardised_rrpu2.csv")
 compare5
