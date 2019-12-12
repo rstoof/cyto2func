@@ -34,10 +34,25 @@ huseyin_median
 
 compare2=pandas.merge(compare,huseyin_median, on=["strain","plasmid","backbone","iptg"], how='outer',validate="1:1")
 
-compare2.to_csv("median_and_mean.csv")
-groups = compare2.query("backbone!=['Empty','EmptyRow']").groupby(['backbone','strain'])
+compare3.query('plasmid=="1717"').groupby(['backbone','strain']).log_mean_gfp
+#compare2["newstandard"]=0
 
-fig, axs = plt.subplots(22,4,figsize=(30,8*22))
+groups = compare2.query("backbone!=['Empty','EmptyRow']").groupby(['backbone','strain'])
+compare3=pandas.merge(compare2,compare2.groupby(['backbone','strain']).rrpu.min().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_min"))
+compare4=pandas.merge(compare3,compare2.query('plasmid=="1717"').groupby(['backbone','strain']).rrpu.mean().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_standard"))
+compare4.rrpu_standard
+compare4["newstandard"]=(np.exp(compare4.rrpu)-np.exp(compare4.rrpu_min))/(np.exp(compare4.rrpu_standard)-np.exp(compare4.rrpu_min))
+compare5=compare4.copy()
+
+compare5.columns
+compare5.drop(columns=['filename',"filename2","date","lowfsc","lowgfp","real_time","log_mean_v_y","rrpu_min","rrpu_standard"])
+
+compare5.to_csv("standardised_rrpu.csv")
+
+
+compare2["rrpu"]=(compare["log_mean_gfp"]*compare["log_std_v"]-compare["log_std_gfp"]*compare["log_mean_v_x"]*compare["log_rho"]+compare["log_std_gfp"]*compare["log_mean_v_y"]*compare["log_rho"])/compare["log_std_v"]
+
+fig, axs = plt.subplots(23,4,figsize=(15,4*23))
 axs=axs.ravel()
 for name, group in groups:
     #fig, [ax1,ax2,ax3,ax4] = plt.subplots(1,4,figsize=(30,8))
@@ -48,41 +63,50 @@ for name, group in groups:
     group2=group.query("plasmid==['1201','1717','Amer_f1', 'Beti_e1','Bm3r1_b1', 'Bm3r1_b2', 'Psra_r1']")
     plasms=group.groupby('plasmid')
     for id,[plas,plasm] in enumerate(plasms):
-        print(id)
+        #print(id)
         plotter=(np.exp(plasm.rrpu)-background)/(np.exp(constituant.rrpu.mean())-background)
+        plasm.newstandard=plotter
         plotter2=(np.exp(plasm.log_mean_gfp)-background)/(np.exp(constituant.log_mean_gfp.mean())-background)
         #plotter2=np.log((np.exp(plasm.log_mean_gfp)-np.exp(background.log_mean_gfp.mean()))/(np.exp(constituant.log_mean_gfp.mean())-np.exp(background.log_mean_gfp.mean())))
-        axs[id+1].plot(plasm.iptg, np.exp(plasm.log_mean_v_x), marker='o', linestyle='-', ms=12, label=plas)
-        axs[id+2].plot(plasm.iptg, plotter2, marker='o', linestyle='-', ms=12, label=plas)
-        axs[id+3].plot(plasm.iptg, plotter, marker='o', linestyle='-', ms=12, label=plas)
-        axs[id+4].plot(plasm.iptg, plasm.median_yfp, marker='o', linestyle='-', ms=12, label=name)
-        axs[id+1].set_xscale('log')
-        axs[id+2].set_xscale('log')
-        axs[id+3].set_xscale('log')
-        axs[id+4].set_xscale('log')
-        #axs[id+1].set_yscale('log')
-        # axs[id+2].set_yscale('log')
-        # axs[id+3].set_yscale('log')
-        # axs[id+4].set_yscale('log')
-        axs[id+1].set_xlabel('iptg')
-        axs[id+1].set_xlabel('iptg')
-        axs[id+1].set_xlabel('iptg')
-        axs[id+1].set_ylabel('FSC')
-        axs[id+2].set_ylabel('not volume conditioned rpu')
-        axs[id+3].set_ylabel('volume conditioned rpu')
-        axs[id+1].legend()
-        axs[id+2].legend()
-        axs[id+3].legend()
-        axs[id+4].legend()
-        axs[id+1].set_ylim([0.,50])
+        axs[4*id+1-1].plot(plasm.iptg, np.exp(plasm.log_mean_v_x), marker='o', linestyle='-', ms=12, label=name)
+        axs[4*id+2-1].plot(plasm.iptg, plotter2, marker='o', linestyle='-', ms=12, label=name)
+        axs[4*id+3-1].plot(plasm.iptg, plotter, marker='o', linestyle='-', ms=12, label=name)
+        axs[4*id+4-1].plot(plasm.iptg, plasm.median_yfp, marker='o', linestyle='-', ms=12, label=name)
+        axs[4*id+1-1].set_xscale('log')
+        axs[4*id+2-1].set_xscale('log')
+        axs[4*id+3-1].set_xscale('log')
+        axs[4*id+4-1].set_xscale('log')
+        #axs[4*id+1-1].set_yscale('log')
+        # axs[4*id+2-1].set_yscale('log')
+        # axs[4*id+3-1].set_yscale('log')
+        # axs[4*id+4-1].set_yscale('log')
+        axs[4*id+1-1].set_xlabel('iptg')
+        axs[4*id+2-1].set_xlabel('iptg')
+        axs[4*id+3-1].set_xlabel('iptg')
+        axs[4*id+4-1].set_ylabel('FSC')
+        axs[4*id+2-1].set_ylabel('not volume conditioned rpu')
+        axs[4*id+3-1].set_ylabel('volume conditioned rpu')
+        axs[4*id+1-1].legend()
+        axs[4*id+2-1].legend()
+        axs[4*id+3-1].legend()
+        axs[4*id+4-1].legend()
+        axs[4*id+1-1].set_ylim([0.,50])
+        axs[4*id+1-1].set_title("FSC_for:"+plas)
+        axs[4*id+2-1].set_title("my_RPU_for:"+plas)
+        axs[4*id+3-1].set_title("my_RRPU_for:"+plas)
+        axs[4*id+4-1].set_title("huseyin_RPU_for:"+plas)
         # axs[id+2].set_ylim([0.01,50])
         # axs[id+3].set_ylim([0.01,50])
         # axs[id+4].set_ylim([0.01,50])
     fig.suptitle(name)
     name2 = re.sub('[^0-9a-zA-Z]+', '_', str(name))
     #plt.savefig(name2+".png")
+plt.tight_layout()
+plt.savefig("all_plasmids"+".png", dpi=300)
 plt.show()
 
+compare2.newstandard
+plasm.newstandard
 
 compare.plasmid.unique()
 fig, [ax1,ax2,ax3] = plt.subplots(1,3,figsize=(30,8))
