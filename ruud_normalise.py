@@ -37,8 +37,12 @@ compare2=pandas.merge(compare,huseyin_median, on=["strain","plasmid","backbone",
 #compare3.query('plasmid=="1717"').groupby(['backbone','strain']).log_mean_gfp
 #compare2["newstandard"]=0
 
-#compare3=pandas.merge(compare2,compare2.groupby(['backbone','strain']).rrpu.min().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_min"))
-compare3=pandas.merge(compare2,compare2.query('plasmid=="1201"').groupby(['backbone','strain']).rrpu.mean().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_min"))
+
+cheeky=False
+if cheeky:
+    compare3=pandas.merge(compare2,compare2.groupby(['backbone','strain']).rrpu.min().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_min"))
+else:
+    compare3=pandas.merge(compare2,compare2.query('plasmid=="1201"').groupby(['backbone','strain']).rrpu.mean().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_min"))
 compare4=pandas.merge(compare3,compare2.query('plasmid=="1717"').groupby(['backbone','strain']).rrpu.mean().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_standard"))
 compare4["newstandard"]=((np.exp(compare4.rrpu)-np.exp(compare4.rrpu_min))/(np.exp(compare4.rrpu_standard)-np.exp(compare4.rrpu_min)))
 compare5=compare4.copy()
@@ -46,10 +50,19 @@ compare5=compare4.copy()
 compare5.columns
 compare5=compare5.drop(columns=['filename',"filename2","date","lowfsc","lowgfp","real_time","log_mean_v_y","rrpu_min","rrpu_standard"])
 
-compare5.to_csv("standardised_rrpu2.csv")
+compare5.to_csv("standardised_rrpu2"+"_cheeky" if cheeky else ""+".csv")
+
 compare5
+
+2+2
+test=4
+test
+test=2
+
+
+test
 groups = compare5.query("backbone!=['Empty','EmptyRow']").groupby(['backbone','strain'])
-compare5[['rrpu','rrpu_min','rrpu_standard']]
+#compare5[['rrpu','rrpu_min','rrpu_standard']]
 
 # compare5.newstandard
 # compare5.newstandard.hist(bins=30)
@@ -69,9 +82,9 @@ for name, group in groups:
         axs[4*id+3-1].set_xscale('log')
         axs[4*id+4-1].set_xscale('log')
         #axs[4*id+1-1].set_yscale('log')
-        # axs[4*id+2-1].set_yscale('log')
-        # axs[4*id+3-1].set_yscale('log')
-        # axs[4*id+4-1].set_yscale('log')
+        axs[4*id+2-1].set_yscale('log')
+        axs[4*id+3-1].set_yscale('log')
+        axs[4*id+4-1].set_yscale('log')
         axs[4*id+1-1].set_xlabel('iptg')
         axs[4*id+2-1].set_xlabel('iptg')
         axs[4*id+3-1].set_xlabel('iptg')
@@ -87,16 +100,15 @@ for name, group in groups:
         axs[4*id+2-1].set_title("my_RPU_for:"+plas)
         axs[4*id+3-1].set_title("my_RRPU_for:"+plas)
         axs[4*id+4-1].set_title("huseyin_RPU_for:"+plas)
-        #axs[id+1].set_ylim([0.01,50])
-        #axs[id+3].set_ylim([0.01,50])
-        #axs[id+4].set_ylim([0.01,50])
+        axs[4*id+1].set_ylim([0.001,50])
+        axs[4*id+2].set_ylim([0.001,50])
+        axs[4*id+3].set_ylim([0.001,50])
     fig.suptitle(name)
     name2 = re.sub('[^0-9a-zA-Z]+', '_', str(name))
     #plt.savefig(name2+".png")
 plt.tight_layout()
-plt.savefig("all_plasmids"+".png", dpi=300)
+plt.savefig("all_plasmids_"+str(cheeky)+".png", dpi=300)
 plt.show()
-
 
 
 
@@ -170,10 +182,10 @@ for name, group in groups:
         plasm.newstandard=plotter
         plotter2=(np.exp(plasm.log_mean_gfp)-background)/(np.exp(constituant.log_mean_gfp.mean())-background)
         #plotter2=np.log((np.exp(plasm.log_mean_gfp)-np.exp(background.log_mean_gfp.mean()))/(np.exp(constituant.log_mean_gfp.mean())-np.exp(background.log_mean_gfp.mean())))
-        axs[4*id+1-1].plot(plasm.iptg, np.exp(plasm.log_mean_v_x), marker='o', linestyle='-', ms=12, label=name)
-        axs[4*id+2-1].plot(plasm.iptg, plotter2, marker='o', linestyle='-', ms=12, label=name)
-        axs[4*id+3-1].plot(plasm.iptg, plotter, marker='o', linestyle='-', ms=12, label=name)
-        axs[4*id+4-1].plot(plasm.iptg, plasm.median_yfp, marker='o', linestyle='-', ms=12, label=name)
+        axs[4*id+1-1].plot(plasm.iptg, np.exp(plasm.log_mean_v_x), marker='o', linestyle='-', ms=6, label=name)
+        axs[4*id+2-1].plot(plasm.iptg, plotter2, marker='o', linestyle='-', ms=6, label=name)
+        axs[4*id+3-1].plot(plasm.iptg, plotter, marker='o', linestyle='-', ms=6, label=name)
+        axs[4*id+4-1].plot(plasm.iptg, plasm.median_yfp, marker='o', linestyle='-', ms=6, label=name)
         axs[4*id+1-1].set_xscale('log')
         axs[4*id+2-1].set_xscale('log')
         axs[4*id+3-1].set_xscale('log')
