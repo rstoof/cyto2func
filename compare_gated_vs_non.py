@@ -1,9 +1,17 @@
 import pandas
 
-normal_df=pandas.read_csv('log_normal_fitted2.csv',index_col=0)
-gated=pandas.read_csv('gated.csv',index_col=0)
+#normal_df=pandas.read_csv('log_normal_fitted2.csv',index_col=0)
+#gated=pandas.read_csv('gated.csv',index_col=0)
 gated.columns
 merged=pandas.merge(normal_df,gated,on=['filename', 'date', 'strain', 'plasmid', 'backbone','iptg_concentration','real_time'])
+
+merged.plot(x="log_mean_gfp_x",y="log_mean_gfp_y",kind="scatter")
+merged.plot(x="log_mean_v_x",y="log_mean_v_y",kind="scatter")
+merged.plot(x="log_std_gfp_x",y="log_std_gfp_y",kind="scatter")
+merged.plot(x="log_std_v_x",y="log_std_v_y",kind="scatter")
+
+
+
 merged.corr()
 
 
@@ -108,5 +116,5 @@ for name, group in groups:
     name2 = re.sub('[^0-9a-zA-Z]+', '_', str(name))
     #plt.savefig(name2+".png")
 plt.tight_layout()
-plt.savefig("all_plasmids_"+str(cheeky)+"gated"+".png", dpi=300)
+plt.savefig("all_plasmids_"+str(cheeky)+"gated"+".png", dpi=150)
 plt.show()
