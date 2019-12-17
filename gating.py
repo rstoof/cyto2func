@@ -10,13 +10,8 @@ import seaborn
 import pandas
 from datetime import datetime
 import scipy.stats as st
-%matplotlib inline
+#%matplotlib inline
 
-df=pandas.read_csv('file_description.csv')
-df.filename=df.filename.replace({'.mqd':'.fcs'}, regex=True)
-df.filename2=df.filename.replace({'.mqd':'.fcs'}, regex=True)
-
-channels=["FSC_H","GFP_H"]
 
 #######functions
 def kdedata(dat,usestandardrange=False): #makes a 2D histogram of log transformed data

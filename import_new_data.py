@@ -308,7 +308,7 @@ def gaussian_2d(xy_mesh, amp, xc, yc, sigma_x, sigma_y,rho):
 ########code
 df=pandas.read_csv('file_description.csv')
 df.filename=df.filename.replace({'.mqd':'.fcs'}, regex=True)
-df.filename2=df.filename.replace({'.mqd':'.fcs'}, regex=True)
+#df.filename2=df.filename.replace({'.mqd':'.fcs'}, regex=True)
 
 channels=["FSC_H","GFP_H"]
 testfile=df.head(1).filename[0]
@@ -323,10 +323,14 @@ minvalgfp=[]
 datearr=[]
 droparr=[]
 fitarr=[]
+gate=True
+
 for index,row in df.iterrows():
     try:
         meta, data = fcsparser.parse("../FCS/"+row.filename, meta_data_only=False, reformat_meta=True)
         data.columns=[x.strip().replace('-', '_') for x in data.columns]
+        if gate==True:
+            data=data[(data["SSC_H"]>np.exp(2.5)) & (data["SSC_A"]>0)&(data["FSC_H"]>np.exp(1.5))&(data["GFP_H"]>0)&(data["SSC_A"]>data["SSC_H"])&(data["SSC_H"]>data["FSC_H"])]
         datetime_object = datetime.strptime(meta['$DATE']+" "+meta['$BTIM'], '%Y-%b-%d %H:%M:%S')
         datearr.append(datetime_object)
         minvalfsc.append(data.SSC_H.quantile(.05))
@@ -366,6 +370,8 @@ df3.insert(12,"log_std_v",fitstdv)
 df3.insert(13,"log_rho",fitrho)
 df3.insert(14,"fit_goodness",fitgoodness)
 df3.insert(15,"std_gfp_correct",np.sqrt(1-np.power(np.array(df3.log_rho),2))*np.array(df3.log_std_gfp))
+df3.to_csv("gated.csv")
+
 df3
 
 aap
