@@ -34,7 +34,7 @@ def fit2binormal(kdedat): #fits a 2D -normal distribution to 2D histogram of log
     guess_vals = [np.max(f), 3, 3, 2, 2, .8]
 
     # perform the fit, making sure to flatten the noisy data for the fit routine
-    fit_params, cov_mat = curve_fit(normal_2d, xy_mesh, np.ravel(f), p0=guess_vals, maxfev=10000000,bounds=([0,-3,-3,0,0,.0],[50,15,15,5,5,1]))
+    fit_params, cov_mat = curve_fit(normal_2d, xy_mesh, np.ravel(f), p0=guess_vals, maxfev=100000,bounds=([0,-3,-3,0,0,.0],[50,15,15,5,5,1]))
     # calculate fit parameter errors from covariance matrix
     fit_errors = np.sqrt(np.diag(cov_mat))
     # manually calculate R-squared goodness of fit
@@ -61,10 +61,13 @@ droparr=[]
 fitarr=[]
 gate=True
 
+print("start fitting to bi log normal distribution")
+#df=df.head(50)
 for index,row in df.iterrows():
     try:
         meta, data = fcsparser.parse(data_dir + row.filename, meta_data_only=False, reformat_meta=True)
         data.columns=[x.strip().replace('-', '_') for x in data.columns]
+        #data=data.head(100)
         if gate==True:
             data=data[(data["SSC_H"]>np.exp(2.5)) & (data["SSC_A"]>0)&(data["FSC_H"]>np.exp(1.5))&(data["GFP_H"]>0)&(data["SSC_A"]>data["SSC_H"])&(data["SSC_H"]>data["FSC_H"])]
         datetime_object = datetime.strptime(meta['$DATE']+" "+meta['$BTIM'], '%Y-%b-%d %H:%M:%S')
@@ -76,15 +79,17 @@ for index,row in df.iterrows():
         print(index)
         print(fits)
     except FileNotFoundError:
-        print(f"Fail at {data_dir + row.filename}")
+        print(f"Failed to find {data_dir + row.filename}")
         droparr.append(index)
 
 
 df=df.drop(droparr)
 
-df.insert(6,"lowfsc",minvalfsc)
-df.insert(7,"lowgfp",minvalgfp)
-df.insert(8,"real_time",datearr)
+
+# df.insert(6,"lowfsc",minvalfsc)
+# df.insert(7,"lowgfp",minvalgfp)
+
+df.insert(6,"real_time",datearr)
 
 fitmufl=[fit[1] for fit in fitarr]
 fitmuv=[fit[2] for fit in fitarr]
@@ -94,17 +99,17 @@ fitrho=[fit[5] for fit in fitarr]
 fitgoodness=[fit[6] for fit in fitarr]
 
 
-df.insert(9,"log_mean_gfp",fitmufl)
-df.insert(10,"log_mean_v",fitmuv)
-df.insert(11,"log_std_gfp",fitstdfl)
-df.insert(12,"log_std_v",fitstdv)
-df.insert(13,"log_rho",fitrho)
-df.insert(14,"fit_goodness",fitgoodness)
-df.insert(15,"std_gfp_correct",np.sqrt(1-np.power(np.array(df.log_rho),2))*np.array(df.log_std_gfp))
+df.insert(7,"log_mean_gfp",fitmufl)
+df.insert(8,"log_mean_v",fitmuv)
+df.insert(9,"log_std_gfp",fitstdfl)
+df.insert(10,"log_std_v",fitstdv)
+df.insert(11,"log_rho",fitrho)
+df.insert(12,"fit_goodness",fitgoodness)
+df.insert(13,"std_gfp_correct",np.sqrt(1-np.power(np.array(df.log_rho),2))*np.array(df.log_std_gfp))
 
 
 df2=pandas.merge(df,df.groupby(['backbone','strain']).log_mean_v.mean().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_mean"))
 
-df2["volume_decomposed_log_mean_gfp"]=(df2["log_mean_gfp"]*df2["log_std_v"]-df2["log_std_gfp"]*df2["log_mean_v_x"]*df2["log_rho"]+df2["log_std_gfp"]*df2["log_mean_v_y"]*df2["log_rho"])/df2["log_std_v"]
+df2["volume_decomposed_log_mean_gfp"]=(df2["log_mean_gfp"]*df2["log_std_v"]-df2["log_std_gfp"]*df2["log_mean_v"]*df2["log_rho"]+df2["log_std_gfp"]*df2["log_mean_v_mean"]*df2["log_rho"])/df2["log_std_v"]
 
 df2.to_csv("volume_decomposed.csv")
