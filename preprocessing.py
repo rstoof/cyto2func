@@ -1,4 +1,4 @@
-import parse_fcs_file_descriptions.py
-import decompose_volume.py
-import ruud_normalise.py
-import plot.py
+import parse_fcs_file_descriptions
+import decompose_volume
+import ruud_normalise
+import plot
