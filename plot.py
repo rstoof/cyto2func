@@ -1,17 +1,21 @@
 import re
 import matplotlib.pyplot as plt
 import pandas
-
+import numpy as np
 
 df=pandas.read_csv('standardised.csv',index_col=0)
 groups = df.query("backbone!=['Empty','EmptyRow']").groupby(['backbone','strain'])
 
+
+print("starting plot")
 fig, axs = plt.subplots(23,4,figsize=(15,3*23))
 axs=axs.ravel()
+
+
 for name, group in groups:
     plasms=group.groupby('plasmid')
     for id,[plas,plasm] in enumerate(plasms):
-        axs[3*id+1-1].plot(plasm.iptg, np.exp(plasm.log_mean_v_x), marker='o', linestyle='-', ms=6, label=name)
+        axs[3*id+1-1].plot(plasm.iptg, np.exp(plasm.log_mean_v), marker='o', linestyle='-', ms=6, label=name)
         axs[3*id+2-1].plot(plasm.iptg, plasm.volume_decomposed_log_mean_gfp, marker='o', linestyle='-', ms=6, label=name)
         axs[3*id+3-1].plot(plasm.iptg, plasm.rrpu, marker='o', linestyle='-', ms=6, label=name)
 
@@ -45,5 +49,5 @@ for name, group in groups:
     name2 = re.sub('[^0-9a-zA-Z]+', '_', str(name))
     #plt.savefig(name2+".png")
 plt.tight_layout()
-plt.savefig("all_plasmids_png", dpi=300)
+plt.savefig("all_plasmids.png", dpi=300)
 plt.show()
