@@ -2,10 +2,13 @@ import csv
 import numpy as np
 #import matplotlib.pyplot as plt
 import os
+import sys
 import pandas
 import fcsparser
 from datetime import datetime
 import scipy.stats as st
+
+data_dir = sys.argv[1] if len(sys.argv) > 1 else './'
 
 #fitting to binormal######################################################################################################################################
 
@@ -60,7 +63,7 @@ gate=True
 
 for index,row in df.iterrows():
     try:
-        meta, data = fcsparser.parse("../FCS/"+row.filename, meta_data_only=False, reformat_meta=True)
+        meta, data = fcsparser.parse(data_dir + row.filename, meta_data_only=False, reformat_meta=True)
         data.columns=[x.strip().replace('-', '_') for x in data.columns]
         if gate==True:
             data=data[(data["SSC_H"]>np.exp(2.5)) & (data["SSC_A"]>0)&(data["FSC_H"]>np.exp(1.5))&(data["GFP_H"]>0)&(data["SSC_A"]>data["SSC_H"])&(data["SSC_H"]>data["FSC_H"])]
@@ -72,8 +75,8 @@ for index,row in df.iterrows():
         fitarr.append(fits)
         print(index)
         print(fits)
-    except:
-        print("fail at"+str(index))
+    except FileNotFoundError:
+        print(f"Fail at {data_dir + row.filename}")
         droparr.append(index)
 
 
