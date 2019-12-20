@@ -8,7 +8,7 @@ import fcsparser
 from datetime import datetime
 import scipy.stats as st
 
-data_dir = sys.argv[1] if len(sys.argv) > 1 else './'
+data_dir = sys.argv[1] if len(sys.argv) > 1 else '../FCS/'
 
 #fitting to binormal######################################################################################################################################
 
@@ -61,7 +61,7 @@ droparr=[]
 fitarr=[]
 gate=True
 
-print("start fitting to bi log normal distribution")
+print("start fitting to bi log normal distribution")#this can take quite some time,say overnightish
 #df=df.head(50)
 for index,row in df.iterrows():
     try:

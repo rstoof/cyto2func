@@ -1,4 +1,4 @@
-min_to_back=False
+min_to_back=True
 
 import pandas
 import numpy as np
@@ -19,5 +19,7 @@ df["rrpu"]=((np.exp(df.volume_decomposed_log_mean_gfp)-np.exp(df.volume_decompos
 compactdf=df.copy()
 
 compactdf=compactdf.drop(columns=['filename',"date","real_time","log_mean_v_mean","volume_decomposed_log_mean_gfp_min","volume_decomposed_log_mean_gfp_standard"])
-
-compactdf.to_csv("standardised.csv")
+if (min_to_back):
+    compactdf.to_csv("standardised_no_1201.csv")
+else:
+    compactdf.to_csv("standardised.csv")
