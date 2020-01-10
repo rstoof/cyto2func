@@ -79,9 +79,8 @@ for index,row in df.iterrows():
 
 df=df.drop(droparr)
 
-df.insert(6,"lowfsc",minvalfsc)
-df.insert(7,"lowgfp",minvalgfp)
-df.insert(8,"real_time",datearr)
+
+df.insert(6,"real_time",datearr)
 
 fitmufl=[fit[1] for fit in fitarr]
 fitmuv=[fit[2] for fit in fitarr]
@@ -91,13 +90,13 @@ fitrho=[fit[5] for fit in fitarr]
 fitgoodness=[fit[6] for fit in fitarr]
 
 
-df.insert(9,"log_mean_gfp",fitmufl)
-df.insert(10,"log_mean_v",fitmuv)
-df.insert(11,"log_std_gfp",fitstdfl)
-df.insert(12,"log_std_v",fitstdv)
-df.insert(13,"log_rho",fitrho)
-df.insert(14,"fit_goodness",fitgoodness)
-df.insert(15,"std_gfp_correct",np.sqrt(1-np.power(np.array(df.log_rho),2))*np.array(df.log_std_gfp))
+df.insert(7,"log_mean_gfp",fitmufl)
+df.insert(8,"log_mean_v",fitmuv)
+df.insert(9,"log_std_gfp",fitstdfl)
+df.insert(10,"log_std_v",fitstdv)
+df.insert(11,"log_rho",fitrho)
+df.insert(12,"fit_goodness",fitgoodness)
+df.insert(13,"std_gfp_correct",np.sqrt(1-np.power(np.array(df.log_rho),2))*np.array(df.log_std_gfp))
 
 
 df2=pandas.merge(df,df.groupby(['backbone','strain']).log_mean_v.mean().to_frame(), on=["strain","backbone"], how='outer',suffixes=("","_mean"))

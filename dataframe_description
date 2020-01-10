@@ -1,0 +1,16 @@
+filename, name of flow cytometry file
+date, date of measurment
+strain, an identifier for the used strain
+plasmid, all plasmid information
+backbone, backbone of the used plasmid
+iptg, the concentation of iptg used for induction. Note that there is some inconsitancy and some values that were zero have been replaced with 1
+real_time, time scraped form fcs file
+log_mean_gfp, the fitted log-mean of the gfp_H channel
+log_mean_v, the fitted log-mean of the forward scatter_H channel
+log_std_gfp, standard deviation fitted gfp_H
+log_std_v, standard deviation fitted FSC_H
+log_rho, the fitted correlation between the two channels
+fit_goodness, the R squared value form fit
+std_gfp_correct, the reduced std when conditioned on volume
+volume_decomposed_log_mean_gfp, the mean gfp of distribution at scatter average for context
+rrpu, the standard rpu units with volume_decomposed_log_mean_gfp instead of normal gfp
