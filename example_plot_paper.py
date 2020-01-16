@@ -39,7 +39,7 @@ iters=df[df.fit_goodness>0.98].sort_values(by="log_rho",ascending=False).head(20
 #df[df.filename=="Huseyin2019-09-24.0234.fcs"]
 isinstance
 
-iters2=df[df.filename.isin(["Huseyin2019-09-24.0234.fcs","Huseyin2019-10-03.0125.fcs"])].sort_values(by="log_rho",ascending=False).head(10).iterrows()
+iters2=df[df.filename.isin(["Huseyin2019-10-02.0024.fcs"])].sort_values(by="log_rho",ascending=False).head(10).iterrows()
 
 
 def multivariate_gaussian(pos, mu, Sigma):
@@ -59,7 +59,7 @@ def multivariate_gaussian(pos, mu, Sigma):
     fac = np.einsum('...k,kl,...l->...', pos-mu, Sigma_inv, pos-mu)
 
     return np.exp(-fac / 2) / N
-for index, row in iters:
+for index, row in iters2:
     print("test")#shameless cherrypicking for example
 
 
@@ -73,12 +73,12 @@ for index, row in iters:
     f, [[ax,ax1],[ax2,ax3]] = plt.subplots(ncols=2,nrows=2,figsize=(10, 10),sharey=True,sharex=True,gridspec_kw = {'wspace':0, 'hspace':0})
 
     f.suptitle(row.filename)
-    ax.set_ylim([-1,4.5])
+    ax.set_ylim([2,4.5])
     ax.set_xlim([1,4])
     ax2.axvline(df2["log_mean_v_mean"])
     ax2.text(df2["log_mean_v_mean"]+0.02,1.5+1+0.15,'Context average',rotation=90)
-    ax3.text(df2["log_mean_v_mean"]+0.02,1.5+1+0.15,'Context average',rotation=90)
-    ax3.axvline(df2["log_mean_v_mean"])
+    ax.text(df2["log_mean_v_mean"]+0.02,1.5+1+0.15,'Context average',rotation=90)
+    ax.axvline(df2["log_mean_v_mean"])
 
     #ax1.set_ylim([-1,5])
     #ax.set(xscale="log", yscale="log")
@@ -91,7 +91,7 @@ for index, row in iters:
     sns.kdeplot(np.log(data.FSC_H), np.log(data.GFP_Decomposed), cmap="Blues", shade=True, shade_lowest=True,ax=ax1 )
     N = 60
     X = np.linspace(1, 4, N)
-    Y = np.linspace(-1, 4.5, N)
+    Y = np.linspace(2, 4.5, N)
     X, Y = np.meshgrid(X, Y)
     pos = np.empty(X.shape + (2,))
     pos[:, :, 0] = X
