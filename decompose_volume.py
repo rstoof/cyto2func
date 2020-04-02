@@ -22,8 +22,6 @@ def kdedata(dat): #makes a 2D histogram of log transformed data
     values = np.vstack([fl, vl])
     kernel = st.gaussian_kde(values)
     f = np.reshape(kernel(positions).T, xx.shape)
-    #plt.imshow(np.rot90(f),aspect="auto", cmap=plt.cm.gist_earth_r,extent=[fluormin, fluormax, volmin, volmax])
-    #plt.show()
     return [xx,yy,f]
 def fit2binormal(kdedat): #fits a 2D -normal distribution to 2D histogram of log transformed data
     [xx,yy,f]=kdedat

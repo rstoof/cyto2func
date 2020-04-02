@@ -3,8 +3,7 @@ date, date of measurment
 strain, an identifier for the used strain
 plasmid, all plasmid information
 backbone, backbone of the used plasmid
-iptg, the concentation of iptg used for induction. Note that there is some inconsitancy and some values that were zero have been replaced with 1
-real_time, time scraped form fcs file
+iptg, the concentation of iptg used for induction.
 log_mean_gfp, the fitted log-mean of the gfp_H channel
 log_mean_v, the fitted log-mean of the forward scatter_H channel
 log_std_gfp, standard deviation fitted gfp_H
