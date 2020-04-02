@@ -2,7 +2,7 @@
 Directly translate cytometry data to scatter conditioned RPU's
 
 
-Run preproccessing.py on your flow cytometry data to get:
+Run preproccessing.py on your flow cytometry data to get:  
 -mean fluorescence   
 -mean scattering  
 -standard deviations  
