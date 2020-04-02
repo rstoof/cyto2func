@@ -9,7 +9,7 @@ Run preproccessing.py on your flow cytometry data to get:
 -covariance  
 -goodness of fit to a log transformed bi-normal distribution  
 
-And!  
--scattering corrected fluorescence  
+And:  
+-scattering corrected fluorescence!  
   
 Look in the dataframe description for a more detailed description of output data.
