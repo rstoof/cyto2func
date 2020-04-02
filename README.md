@@ -12,4 +12,4 @@ Run preproccessing.py on your flow cytometry data to get:
 And!  
 -scattering corrected fluorescence  
   
-Look in the dataframe description for a more detailed description of output data
+Look in the dataframe description for a more detailed description of output data.
