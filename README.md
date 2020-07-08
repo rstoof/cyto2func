@@ -5,13 +5,13 @@ This tool transform an ensamble of flow cytometry data experiment in a scatterin
 It has the following functionalities,
 
     It fits your individual experiments to a bivariate log-noraml distriburion, giving:
-    
-        the mean and standard diviations of fluorescence 
-        the mean and standard diviations of FCS (or SSC) 
+
+        the mean and standard diviations of fluorescence
+        the mean and standard diviations of FCS (or SSC)
         the correlation between the measures
         An R-squered value for the goodnes off fit.
-        
-    It takes the ensamble avarage of the mean FCS (or SSC) 
+
+    It takes the ensamble avarage of the mean FCS (or SSC)
     It calculates the rescaled fluorescence points at the ensamble average
     It provides a mean rescaled fluorescence
 
@@ -21,7 +21,7 @@ This is described in our paper at :....
 
 
 
-The current version of the tool only supports the Flow Cytometry Standard files(.fcs) 
+The current version of the tool only supports the Flow Cytometry Standard files(.fcs)
 
 
 As an example the tool will defaultly download the example data from:
@@ -29,11 +29,10 @@ https://data.ncl.ac.uk/articles/dataset/Reconfigurable_genetic_inverters_using_c
 As described in our paper: .....
 
 To run the example:
--run decompose.py 
+-run preprocessing.py
 
 
-
-The resulting database is a comma seperated file called "decomposed.csv" it contains:
+The resulting database is a comma seperated file called "standardised.csv" it contains:
 
     filename, name of flow cytometry file
     date, date of measurment
@@ -67,5 +66,6 @@ To use the tool with your own data:
 
 -Put your files in a Directory /FCS folder in the same direcory as this tool.
 -Put a data file description "file_description.csv" in the same directory like shown in the example.
--run decompose.py 
+-run decompose_volume.py
 
+This results in a file called "volume_decomposed.csv"
