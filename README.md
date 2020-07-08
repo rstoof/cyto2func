@@ -5,10 +5,12 @@ This tool transform an ensamble of flow cytometry data experiment in a scatterin
 It has the following functionalities,
 
     It fits your individual experiments to a bivariate log-noraml distriburion, giving:
+    
         the mean and standard diviations of fluorescence 
         the mean and standard diviations of FCS (or SSC) 
         the correlation between the measures
         An R-squered value for the goodnes off fit.
+        
     It takes the ensamble avarage of the mean FCS (or SSC) 
     It calculates the rescaled fluorescence points at the ensamble average
     It provides a mean rescaled fluorescence
@@ -39,6 +41,7 @@ The resulting database is a comma seperated file called "decomposed.csv" it cont
     volume_decomposed_log_mean_gfp, the mean gfp of distribution at scatter average for context
 
 optional extras but required for the example by huseyin et al.
+
     plasmid, all plasmid information
     backbone, backbone of the used plasmid
     iptg, the concentation of iptg used for induction.
