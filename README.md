@@ -18,12 +18,20 @@ It has the following functionalities,
 This is described in our paper at :....
 
 
+
+
+
 The current version of the tool only supports the Flow Cytometry Standard files(.fcs) 
 
-To use the tool run the file decompose.py with your ensamble in the /FCS folder and a data file description like shown in the example.
-It will defaultly download the example data from:
+
+As an example the tool will defaultly download the example data from:
 https://data.ncl.ac.uk/articles/dataset/Reconfigurable_genetic_inverters_using_contextual_dependencies/12073479
 As described in our paper: .....
+
+To run the example:
+-run decompose.py 
+
+
 
 The resulting database is a comma seperated file called "decomposed.csv" it contains:
 
@@ -47,4 +55,17 @@ optional extras but required for the example by huseyin et al.
     iptg, the concentation of iptg used for induction.
     rrpu, the standard rpu units with volume_decomposed_log_mean_gfp instead of normal gfp
 
+
+
+
+
+
+
+
+
+To use the tool with your own data:
+
+-Put your files in a Directory /FCS folder in the same direcory as this tool.
+-Put a data file description "file_description.csv" in the same directory like shown in the example.
+-run decompose.py 
 
