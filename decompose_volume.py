@@ -8,7 +8,7 @@ import fcsparser
 from datetime import datetime
 import scipy.stats as st
 
-data_dir = sys.argv[1] if len(sys.argv) > 1 else '../FCS/'
+data_dir = sys.argv[1] if len(sys.argv) > 1 else './FCS/'
 
 #fitting to binormal######################################################################################################################################
 

@@ -27,6 +27,7 @@ The current version of the tool only supports the Flow Cytometry Standard files(
 As an example the tool will defaultly download the example data from:
 https://data.ncl.ac.uk/articles/dataset/Reconfigurable_genetic_inverters_using_contextual_dependencies/12073479
 As described in our paper: .....
+Note that this will take up ca. 20GB  of disk space on your machine.
 
 To run the example:
 -run preprocessing.py
