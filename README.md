@@ -1,6 +1,7 @@
 # FlowScatt
 This tool transform an ensamble of flow cytometry data experiment in a scattering dependent and non-dependent part.
 
+![Alt Text](./Example.png)
 
 It has the following functionalities,
 
