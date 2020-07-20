@@ -1,4 +1,7 @@
-import download
+import sys
+
+if len(sys.argv) > 1 and sys.argv[1] == 'with-download':
+    import download
 
 import decompose_volume
 import normalise

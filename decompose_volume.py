@@ -7,6 +7,8 @@ import pandas
 import fcsparser
 from datetime import datetime
 import scipy.stats as st
+import multiprocessing
+import statsmodels.api as sm
 
 data_dir = sys.argv[1] if len(sys.argv) > 1 else './FCS/'
 
@@ -24,10 +26,17 @@ def kdedata(dat): #makes a 2D histogram of log transformed data
     positions = np.vstack([xx.ravel(), yy.ravel()])
     values = np.vstack([fl, vl])
     kernel = st.gaussian_kde(values)
-    f = np.reshape(kernel(positions).T, xx.shape)
-    #plt.imshow(np.rot90(f),aspect="auto", cmap=plt.cm.gist_earth_r,extent=[fluormin, fluormax, volmin, volmax])
-    #plt.show()
+
+    cpus = multiprocessing.cpu_count()
+    splits = np.array_split(positions, cpus, axis=1)
+    pool = multiprocessing.Pool(processes=cpus)
+    partial_results = pool.map(kernel.pdf, splits)
+    results = np.concatenate(partial_results)
+    f = np.reshape(results.T, xx.shape)
+    pool.terminate()
     return [xx,yy,f]
+
+
 def fit2binormal(kdedat): #fits a 2D -normal distribution to 2D histogram of log transformed data
     [xx,yy,f]=kdedat
     xy_mesh = [xx,yy]
@@ -61,13 +70,13 @@ droparr=[]
 fitarr=[]
 gate=True
 
+df = df.head(10)
+
 print("start fitting to bi log normal distribution")#this can take quite some time,say overnightish
-#df=df.head(50)
 for index,row in df.iterrows():
     try:
         meta, data = fcsparser.parse(data_dir + row.filename, meta_data_only=False, reformat_meta=True)
         data.columns=[x.strip().replace('-', '_') for x in data.columns]
-        #data=data.head(100)
         if gate==True:
             data=data[(data["SSC_H"]>np.exp(2.5)) & (data["SSC_A"]>0)&(data["FSC_H"]>np.exp(1.5))&(data["GFP_H"]>0)&(data["SSC_A"]>data["SSC_H"])&(data["SSC_H"]>data["FSC_H"])]
         datetime_object = datetime.strptime(meta['$DATE']+" "+meta['$BTIM'], '%Y-%b-%d %H:%M:%S')
