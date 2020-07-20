@@ -31,7 +31,8 @@ As described in our paper: .....
 Note that this will take up ca. 20GB  of disk space on your machine.
 
 To run the example:
--run preprocessing.py
+
+`python3 preprocessing.py with-download`
 
 
 The resulting database is a comma seperated file called "standardised.csv" it contains:
