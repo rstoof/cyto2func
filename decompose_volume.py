@@ -70,7 +70,6 @@ droparr=[]
 fitarr=[]
 gate=True
 
-df = df.head(10)
 
 print("start fitting to bi log normal distribution")#this can take quite some time,say overnightish
 for index,row in df.iterrows():
