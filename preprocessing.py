@@ -1,8 +1,6 @@
-import sys
 from urllib.request import urlretrieve
 import zipfile
 import argparse
-import num
 
 from decompose_volume import decompose
 from normalise import normalise

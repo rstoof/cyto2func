@@ -32,7 +32,7 @@ Note that this will take up ca. 20GB  of disk space on your machine.
 
 To run the example:
 
-`python3 preprocessing.py with-download`
+`python3 preprocessing.py --download --min-to-back`
 
 
 The resulting database is a comma seperated file called "standardised.csv" it contains:
