@@ -36,7 +36,9 @@ parser.add_argument('-o', '--outfile', type=str, nargs=1, metavar='FILENAME',
 
 
 def download_and_extract(url):
+    print("starting download, this may take some time")
     urlretrieve(url, "FCS.zip")
+    print("files downloaded,starting unpacking")
 
     with zipfile.ZipFile("FCS.zip", 'r') as zip_ref:
         zip_ref.extractall(DATA_DIR)

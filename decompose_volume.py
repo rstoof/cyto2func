@@ -5,7 +5,7 @@ from datetime import datetime
 import scipy.stats as st
 from scipy.optimize import curve_fit
 import multiprocessing
-
+from inputimeout import inputimeout, TimeoutOccurred
 # fitting to binormal##########################################################
 
 
@@ -84,7 +84,7 @@ def decompose(out_file, desc_file, data_directory, channels, gate=True):
     datearr = []
     droparr = []
     fitarr = []
-
+    tot=len(df)
     print("Start fitting to bi log normal distribution")
     print("This may take some time...")
 
@@ -103,9 +103,18 @@ def decompose(out_file, desc_file, data_directory, channels, gate=True):
             data2 = kdedata([np.log(data[channels[1]]), np.log(data[channels[0]])])
             fits = fit2binormal(data2)
             fitarr.append(fits)
-            print(index, fits)
+            print(str(index+1)+"/"+str(tot), fits)
         except FileNotFoundError:
             print(f"Failed to find file {data_directory + row.filename}")
+            print('The file description does not match with local files, if you want to run with demo files run:"python preprocessing.py --download"')
+            print("Continue? Y/n, Continuing in 10s")
+            try:
+                cont = inputimeout(prompt='>>', timeout=10)
+            except TimeoutOccurred:
+                cont = 'y'
+                print("Continuing")
+            if cont=="n" or cont=="no":
+                quit()
             droparr.append(index)
 
     df = df.drop(droparr)
