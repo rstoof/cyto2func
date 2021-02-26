@@ -119,7 +119,7 @@ def decompose(out_file, desc_file, data_directory, channels, gate=True):
 
     df = df.drop(droparr)
     df.insert(6, 'real_time', datearr)
-
+    print("fitting completed!")
     fitmufl = [fit[1] for fit in fitarr]
     fitmuv = [fit[2] for fit in fitarr]
     fitstdfl = [fit[3] for fit in fitarr]
@@ -148,4 +148,5 @@ def decompose(out_file, desc_file, data_directory, channels, gate=True):
         df2["log_mean_v_mean"] * df2["log_rho"]) / df2["log_std_v"]
 
     df2.to_csv(out_file)
+    print("Writing to : "+str(out_file))
     return df2
